@@ -221,7 +221,14 @@
         color: var(--main-color);
         border: none;
     }
-    
+    #inputs-container{
+        max-height: 33vh;
+        overflow-y: scroll;
+        margin-bottom: 10px;
+    }
+    #inputs-container::-webkit-scrollbar {
+        width: 0px;
+      }
     .container input[type="range"] {
         -webkit-appearance: none;
         width: 100%;

@@ -178,6 +178,9 @@
         align-items: center;
         font-size: 20px;
     }
+    #timer-circle.bright {
+        filter: brightness(120%);
+    }
     
     #timer-text {
         text-align: center;
@@ -222,9 +225,8 @@
         border: none;
     }
     #inputs-container{
-        max-height: 33vh;
+        max-height: 45vh;
         overflow-y: scroll;
-        margin-bottom: 10px;
     }
     #inputs-container::-webkit-scrollbar {
         width: 0px;
@@ -239,7 +241,7 @@
         margin-top: 10px;
         margin-bottom: 10px;
       }
-      
+
       .container input[type="range"]::-webkit-slider-thumb {
         -webkit-appearance: none;
         appearance: none;
@@ -264,23 +266,43 @@
         border: 0;
       }
       /* Styling for Add Level button */
-    #add-slider,
-    #level-complete {
+    #add-slider{
       background-color: var(--main-color); /* Green */
       border: none;
       color: white;
       text-align: center;
       text-decoration: none;
-      display: inline-block;
-      margin: 10px 2px;
-      cursor: pointer;
       border-radius: 8px;
-      padding: 10px 20px;
+      font-size: 1.5rem;
+      position: absolute;
+      padding: 10px 40px;
+      left: 50%;
+      bottom: 8vh;
+      transform: translateX(-50%);
     }
     
     #add-slider:hover,
     #level-complete:hover {
       background-color: var(--main-color); /* Darker green */
+    }
+    #timer-circle {
+        /* Existing styles */
+        position: relative; /* Keep this line */
+    }
+    
+    #timer-text {
+        /* Existing styles */
+        position: relative; /* Add this line */
+    }
+    
+    #tab-hold-text {
+        /* Existing styles */
+        font-size: 0.8rem;
+        color: white;
+        display: inline-block; /* Add this line */
+        position: absolute;
+        transform: translateX(-50%);
+        margin-top: 10px;
     }
     
     
@@ -290,18 +312,20 @@
 
 <h1>Solo Leveling</h1>
 <div id="timer-circle">
-  <div id="timer-text">
-    <span id="time"></span><br>
-    <span id="percentage"></span>
-  </div>
+    <div id="timer-text">
+        <span id="time"></span><br>
+        <span id="percentage"></span><br>
+        <span id="tab-hold-text">Tab Hold<br>Submit</span>
+    </div>
 </div>
+
+  
 
 <div class="container">
     <h3>Daily Levels</h3>
     <div id="inputs-container"></div>
-    <button id="add-slider">Add Level</button>
+    <button id="add-slider">+</button>
     <button id="toggle-edit-delete">&#9881;</button>
-    <button id="level-complete">Level Complete</button> <!-- New button -->
 </div>
 
 <div class="popup-container" id="popup">
@@ -316,272 +340,266 @@
     </select>
     </div>
     <input type="text" id="custom-range-input" placeholder="Enter Level Type">
-    <button id="submit">Submit</button>
+    <button id="submit">Add</button>
 </div>
 
 <script>
     const addButton = document.getElementById("add-slider");
-    const toggleEditDeleteButton = document.getElementById("toggle-edit-delete");
-    const levelCompleteButton = document.getElementById("level-complete"); // New button reference
-    const inputsContainer = document.getElementById("inputs-container");
-    const popupContainer = document.getElementById("popup");
-    const levelNameInput = document.getElementById("level-name-input");
-    const maxRangeInput = document.getElementById("max-range-input");
-    const rangeTypeSelect = document.getElementById("range-type");
-    const customRangeInput = document.getElementById("custom-range-input");
-    const submitButton = document.getElementById("submit");
-    const closePopupButton = document.getElementById("close-popup");
-    const timerElement = document.getElementById("timer");
-    const timerTextElement = document.getElementById("time");
-    const percentageElement = document.getElementById("percentage");
+const toggleEditDeleteButton = document.getElementById("toggle-edit-delete");
+const levelCompleteButton = document.getElementById("level-complete");
+const inputsContainer = document.getElementById("inputs-container");
+const popupContainer = document.getElementById("popup");
+const levelNameInput = document.getElementById("level-name-input");
+const maxRangeInput = document.getElementById("max-range-input");
+const rangeTypeSelect = document.getElementById("range-type");
+const customRangeInput = document.getElementById("custom-range-input");
+const submitButton = document.getElementById("submit");
+const closePopupButton = document.getElementById("close-popup");
+const timerTextElement = document.getElementById("time");
+const percentageElement = document.getElementById("percentage");
+let deleteButtonsVisible = false;
 
-    let sliderCount = 0;
-    let deleteButtonsVisible = false;
+function updateTimerCircle(hours, minutes, seconds, completionPercentage) {
+    timerTextElement.textContent = `${hours}h ${minutes}m ${seconds}s`;
+    percentageElement.textContent = `${completionPercentage}%`;
+}
 
-    function updateTimerCircle(hours, minutes, seconds, completionPercentage) {
-      timerTextElement.textContent = `${hours}h ${minutes}m ${seconds}s`;
-      percentageElement.textContent = `${completionPercentage}%`;
-    }
+function updateTimer() {
+    const currentTime = new Date();
+    const nextDay = new Date(currentTime);
+    nextDay.setDate(currentTime.getDate() + 1);
+    nextDay.setHours(0, 0, 0, 0);
+    const timeRemaining = nextDay - currentTime;
+    const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
 
-    function updateTimer() {
-        const currentTime = new Date();
-        const nextDay = new Date(currentTime);
-        nextDay.setDate(currentTime.getDate() + 1);
-        nextDay.setHours(0, 0, 0, 0);
-        const timeRemaining = nextDay - currentTime;
-        const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
-
-        let totalMax = 0;
-        let totalValue = 0;
-        const sliders = document.querySelectorAll('.slider');
-        sliders.forEach(slider => {
-          if (parseInt(slider.value) > 0) {
+    let totalMax = 0;
+    let totalValue = 0;
+    const sliders = document.querySelectorAll('.slider');
+    sliders.forEach(slider => {
+        if (parseInt(slider.value) > 0) {
             totalMax += parseInt(slider.max);
             totalValue += parseInt(slider.value);
-          }
-        });
-        const completionPercentage = totalMax !== 0 ? ((totalValue / totalMax) * 100).toFixed(2) : 0;
-
-        updateTimerCircle(hours, minutes, seconds, completionPercentage);
-
-        if (timeRemaining <= 0) {
-          timerTextElement.textContent = "Next Day!";
-          levelComplete(); // Trigger level complete when time ends
-          resetSetRanges();
         }
+    });
+    const completionPercentage = totalMax !== 0 ? ((totalValue / totalMax) * 100).toFixed(2) : 0;
 
-        requestAnimationFrame(updateTimer);
+    updateTimerCircle(hours, minutes, seconds, completionPercentage);
+
+    if (timeRemaining <= 0) {
+        timerTextElement.textContent = "Next Day!";
+        levelComplete();
+        resetSetRanges();
+        resetLevelValues(); // Call the function to reset level values
     }
 
-    function resetSetRanges() {
-        const sliders = document.querySelectorAll('.slider');
-        sliders.forEach((slider) => {
-            const inputGroup = slider.parentNode;
-            inputGroup.remove();
-        });
-        localStorage.removeItem('sliderValues');
-    }
+    requestAnimationFrame(updateTimer);
+}
 
-    updateTimer();
-
-    addButton.addEventListener("click", () => popupContainer.style.display = "block");
-
-    closePopupButton.addEventListener("click", () => {
-        popupContainer.style.display = "none";
-        levelNameInput.value = "";
-        maxRangeInput.value = "";
-        rangeTypeSelect.value = "km";
-        customRangeInput.value = "";
-        customRangeInput.style.display = "none";
+function resetLevelValues() {
+    const sliders = document.querySelectorAll('.slider');
+    sliders.forEach((slider) => {
+        slider.value = 0;
+        const inputGroup = slider.parentNode;
+        const input = inputGroup.querySelector(".value");
+        input.textContent = `0/${slider.max} ${input.textContent.split(" ").pop()}`;
     });
+}
 
-    submitButton.addEventListener("click", () => {
-        const levelName = levelNameInput.value.trim();
-        const maxRange = parseInt(maxRangeInput.value.trim());
-        const rangeType = rangeTypeSelect.value === 'custom' ? customRangeInput.value.trim() : rangeTypeSelect.value;
 
-        if (!levelName || isNaN(maxRange) || maxRange <= 0 || (rangeTypeSelect.value === 'custom' && !rangeType)) {
-            return alert("Please enter valid data.");
-        }
+function addLevel(levelName, maxRange, rangeType) {
+    const inputGroup = document.createElement("div");
+    inputGroup.classList.add("input-group");
+    const slider = document.createElement("input");
+    slider.type = "range";
+    slider.min = "0";
+    slider.max = maxRange;
+    slider.value = "0";
+    slider.classList.add("slider");
+    const input = document.createElement("span");
+    input.classList.add("value");
+    input.textContent = `0/${slider.max} ${rangeType}`;
+    const levelNameElement = document.createElement("p");
+    levelNameElement.textContent = levelName;
+    levelNameElement.contentEditable = false;
+    levelNameElement.classList.add("level-name");
+    inputGroup.appendChild(levelNameElement);
+    inputGroup.appendChild(slider);
+    inputGroup.appendChild(input);
+    inputsContainer.appendChild(inputGroup);
 
-        addLevel(levelName, maxRange, rangeType);
-        levelNameInput.value = "";
-        maxRangeInput.value = "";
-        rangeTypeSelect.value = "km";
-        customRangeInput.value = "";
-        customRangeInput.style.display = "none";
-        popupContainer.style.display = "none";
-    });
-
-    toggleEditDeleteButton.addEventListener("click", function() {
-        const levelNameElements = document.querySelectorAll('.level-name');
-        const inputGroups = document.querySelectorAll(".input-group");
-        deleteButtonsVisible = !deleteButtonsVisible;
-
-        levelNameElements.forEach(element => {
-            element.contentEditable = !element.isContentEditable;
-        });
-
-        inputGroups.forEach(group => {
-            const deleteButton = group.querySelector(".delete-button");
-            if (deleteButtonsVisible) {
-                if (!deleteButton) {
-                    const newDeleteButton = document.createElement("button");
-                    newDeleteButton.textContent = "✖"; // Cross symbol
-                    newDeleteButton.classList.add("delete-button");
-                    newDeleteButton.addEventListener("click", function() {
-                        group.remove();
-                        saveValues();
-                    });
-                    group.appendChild(newDeleteButton);
-                }
-            } else {
-                if (deleteButton) {
-                    deleteButton.remove();
-                }
-            }
-        });
-    });
-
-    levelCompleteButton.addEventListener("click", levelComplete); // Event listener for level complete button
-
-    rangeTypeSelect.addEventListener("change", function() {
-        if (rangeTypeSelect.value === 'custom') {
-            customRangeInput.style.display = "block";
-        } else {
-            customRangeInput.style.display = "none";
-        }
-    });
-
-    function addLevel(levelName, maxRange, rangeType) {
-        sliderCount++;
-        const inputGroup = document.createElement("div");
-        inputGroup.classList.add("input-group");
-        const slider = document.createElement("input");
-        slider.type = "range";
-        slider.min = "0";
-        slider.max = maxRange;
-        slider.value = "0";
-        slider.classList.add("slider");
-        const input = document.createElement("span");
-        input.classList.add("value");
-        input.textContent = `0/${slider.max} ${rangeType}`;
-        const levelNameElement = document.createElement("p");
-        levelNameElement.textContent = levelName;
-        levelNameElement.contentEditable = false;
-        levelNameElement.classList.add("level-name");
-        inputGroup.appendChild(levelNameElement);
-        inputGroup.appendChild(slider);
-        inputGroup.appendChild(input);
-        inputsContainer.appendChild(inputGroup);
-
-        levelNameElement.addEventListener("input", saveValues);
-        slider.addEventListener("input", () => {
-            input.textContent = `${slider.value}/${slider.max} ${rangeType}`;
-            saveValues();
-        });
-
-        slider.dispatchEvent(new Event('input'));
+    levelNameElement.addEventListener("input", saveValues);
+    slider.addEventListener("input", () => {
+        input.textContent = `${slider.value}/${slider.max} ${rangeType}`;
         saveValues();
-        const lastLevelName = inputGroup.querySelector('.level-name');
-        if (lastLevelName) lastLevelName.dispatchEvent(new Event('input'));
-    }
+    });
 
-    window.addEventListener('DOMContentLoaded', loadValues);
+    slider.dispatchEvent(new Event('input'));
+    saveValues();
+    const lastLevelName = inputGroup.querySelector('.level-name');
+    if (lastLevelName) lastLevelName.dispatchEvent(new Event('input'));
+}
 
-    function saveValues() {
+function saveValues() {
+    const sliders = document.querySelectorAll('.slider');
+    const levelNames = document.querySelectorAll('.level-name');
+    const values = [];
+
+    sliders.forEach((slider, index) => {
+        const inputGroup = slider.parentNode;
+        const rangeType = inputGroup.querySelector(".value").textContent.split(" ").pop();
+        values.push({
+            slider: slider.value,
+            levelName: levelNames[index].textContent,
+            maxRange: slider.max,
+            rangeType: rangeType
+        });
+    });
+
+    localStorage.setItem('sliderValues', JSON.stringify(values));
+}
+
+function loadValues() {
+    const savedValues = JSON.parse(localStorage.getItem('sliderValues'));
+
+    if (savedValues) {
+        savedValues.forEach((value) => {
+            addLevel(value.levelName, value.maxRange, value.rangeType);
+        });
+
         const sliders = document.querySelectorAll('.slider');
         const levelNames = document.querySelectorAll('.level-name');
-        const values = [];
 
         sliders.forEach((slider, index) => {
-            const inputGroup = slider.parentNode;
-            const rangeType = inputGroup.querySelector(".value").textContent.split(" ").pop();
-            values.push({
-                slider: slider.value,
-                levelName: levelNames[index].textContent,
-                maxRange: slider.max,
-                rangeType: rangeType
-            });
+            slider.value = savedValues[index].slider;
+            slider.max = savedValues[index].maxRange;
+            slider.dispatchEvent(new Event('input'));
+            levelNames[index].textContent = savedValues[index].levelName;
+            levelNames[index].dispatchEvent(new Event('input'));
         });
-
-        localStorage.setItem('sliderValues', JSON.stringify(values));
     }
+}
 
-    function loadValues() {
-        const savedValues = JSON.parse(localStorage.getItem('sliderValues'));
+function levelComplete() {
+    const completionPercentage = parseFloat(percentageElement.textContent.replace("Completion: ", ""));
+    const timeTaken = timerTextElement.textContent;
+    const currentTime = new Date();
+    const nextDay = new Date(currentTime);
+    nextDay.setDate(currentTime.getDate() + 1);
+    nextDay.setHours(0, 0, 0, 0);
+    const timeRemaining = nextDay - currentTime;
+    const totalMax = 24 * 60 * 60 * 1000; // Total milliseconds in a day
+    const timeNeeded = totalMax - timeRemaining; // Time needed based on remaining time
 
-        if (savedValues) {
-            savedValues.forEach((value) => {
-                addLevel(value.levelName, value.maxRange, value.rangeType);
-            });
+    const hoursNeeded = Math.floor(timeNeeded / (1000 * 60 * 60));
+    const minutesNeeded = Math.floor((timeNeeded % (1000 * 60 * 60)) / (1000 * 60));
+    const secondsNeeded = Math.floor((timeNeeded % (1000 * 60)) / 1000);
 
-            const sliders = document.querySelectorAll('.slider');
-            const levelNames = document.querySelectorAll('.level-name');
-
-            sliders.forEach((slider, index) => {
-                slider.value = savedValues[index].slider;
-                slider.max = savedValues[index].maxRange;
-                slider.dispatchEvent(new Event('input'));
-                levelNames[index].textContent = savedValues[index].levelName;
-                levelNames[index].dispatchEvent(new Event('input'));
-            });
-        }
-    }
-
-    function levelComplete() {
-        const completionPercentage = parseFloat(percentageElement.textContent.replace("Completion: ", ""));
-        const timeTaken = timerTextElement.textContent;
-        const currentTime = new Date();
-        const nextDay = new Date(currentTime);
-        nextDay.setDate(currentTime.getDate() + 1);
-        nextDay.setHours(0, 0, 0, 0);
-        const timeRemaining = nextDay - currentTime;
-        const totalMax = 24 * 60 * 60 * 1000; // Total milliseconds in a day
-        const timeNeeded = totalMax - timeRemaining; // Time needed based on remaining time
-    
-        // Format time needed
-        const hoursNeeded = Math.floor(timeNeeded / (1000 * 60 * 60));
-        const minutesNeeded = Math.floor((timeNeeded % (1000 * 60 * 60)) / (1000 * 60));
-        const secondsNeeded = Math.floor((timeNeeded % (1000 * 60)) / 1000);
-    
-        // Show congratulations popup
-        const popupContent = `
-            <div class="cong">
-                <div>
-                    <h2>Congratulations!</h2>
-                    <p>You've completed today's level.</p>
-                    <p>Completion : ${completionPercentage}%</p>
-                    <p>Complete in : ${hoursNeeded}h ${minutesNeeded}m ${secondsNeeded}s</p>
-                    <button id="close-cong-popup">&#10006;</button>
-                </div>
+    const popupContent = `
+        <div class="cong">
+            <div>
+                <h2>Congratulations!</h2>
+                <p>You've completed today's level.</p>
+                <p>Completion : ${completionPercentage}%</p>
+                <p>Complete in : ${hoursNeeded}h ${minutesNeeded}m ${secondsNeeded}s</p>
+                <button id="close-cong-popup">&#10006;</button>
             </div>
-        `;
-    
-        const popup = document.createElement("div");
-        popup.classList.add("popup");
-        popup.innerHTML = popupContent;
-    
-        document.body.appendChild(popup);
-    
-        // Close the popup when the close button is clicked
-        const closePopupButton = popup.querySelector("#close-cong-popup");
-        closePopupButton.addEventListener("click", () => {
-            popup.remove();
-        });
-    
-        // Reset slider values to default
-        const sliders = document.querySelectorAll('.slider');
-        sliders.forEach((slider) => {
-            slider.value = 0;
-            const inputGroup = slider.parentNode;
-            const input = inputGroup.querySelector(".value");
-            input.textContent = `0/${slider.max} ${input.textContent.split(" ").pop()}`;
-        });
+        </div>
+    `;
+
+    const popup = document.createElement("div");
+    popup.classList.add("popup");
+    popup.innerHTML = popupContent;
+
+    document.body.appendChild(popup);
+
+    const closePopupButton = popup.querySelector("#close-cong-popup");
+    closePopupButton.addEventListener("click", () => {
+        popup.remove();
+    });
+
+    const sliders = document.querySelectorAll('.slider');
+    sliders.forEach((slider) => {
+        slider.value = 0;
+        const inputGroup = slider.parentNode;
+        const input = inputGroup.querySelector(".value");
+        input.textContent = `0/${slider.max} ${input.textContent.split(" ").pop()}`;
+    });
+}
+
+updateTimer();
+
+addButton.addEventListener("click", () => popupContainer.style.display = "block");
+
+closePopupButton.addEventListener("click", () => {
+    popupContainer.style.display = "none";
+    [levelNameInput.value, maxRangeInput.value, rangeTypeSelect.value, customRangeInput.value] = ['', '', 'km', ''];
+    customRangeInput.style.display = "none";
+});
+
+submitButton.addEventListener("click", () => {
+    const levelName = levelNameInput.value.trim();
+    const maxRange = parseInt(maxRangeInput.value.trim());
+    const rangeType = rangeTypeSelect.value === 'custom' ? customRangeInput.value.trim() : rangeTypeSelect.value;
+
+    if (!levelName || isNaN(maxRange) || maxRange <= 0 || (rangeTypeSelect.value === 'custom' && !rangeType)) {
+        return alert("Please enter valid data.");
     }
-    
+
+    addLevel(levelName, maxRange, rangeType);
+    [levelNameInput.value, maxRangeInput.value, rangeTypeSelect.value, customRangeInput.value] = ['', '', 'km', ''];
+    customRangeInput.style.display = "none";
+    popupContainer.style.display = "none";
+});
+
+toggleEditDeleteButton.addEventListener("click", () => {
+    const levelNameElements = document.querySelectorAll('.level-name');
+    const inputGroups = document.querySelectorAll(".input-group");
+    deleteButtonsVisible = !deleteButtonsVisible;
+
+    levelNameElements.forEach(element => element.contentEditable = !element.isContentEditable);
+
+    inputGroups.forEach(group => {
+        const deleteButton = group.querySelector(".delete-button");
+        if (deleteButtonsVisible) {
+            if (!deleteButton) {
+                const newDeleteButton = document.createElement("button");
+                newDeleteButton.textContent = "✖";
+                newDeleteButton.classList.add("delete-button");
+                newDeleteButton.addEventListener("click", () => {
+                    group.remove();
+                    saveValues();
+                });
+                group.appendChild(newDeleteButton);
+            }
+        } else {
+            if (deleteButton) deleteButton.remove();
+        }
+    });
+});
+
+//levelCompleteButton.addEventListener("click", levelComplete);
+const timerCircle = document.getElementById("timer-circle");
+let holdTimer;
+
+timerCircle.addEventListener("touchstart", () => {
+    timerCircle.classList.add("bright");
+    holdTimer = setTimeout(() => {
+        levelComplete();
+    }, 2000); // 2 seconds
+});
+
+timerCircle.addEventListener("touchend", () => {
+    clearTimeout(holdTimer);
+    timerCircle.classList.remove("bright");
+});
+
+
+rangeTypeSelect.addEventListener("change", () => customRangeInput.style.display = rangeTypeSelect.value === 'custom' ? "block" : "none");
+
+window.addEventListener('DOMContentLoaded', loadValues);
+
 </script>
 </body>
 </html>

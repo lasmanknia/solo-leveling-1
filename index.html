@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Solo Leveling</title>
+<link rel="stylesheet" href="style.css">
 <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
@@ -11,595 +12,321 @@
       });
     }
    </script>
-<style>
-    :root {
-        --main-color: hsl(154, 84%, 47%); /* Define your main color here */
-        --bg-color: #141E46;
-      }
-    /* General styles */
-    *{
-        margin: 0;
-        padding: 0;
-        -webkit-tap-highlight-color: #3498db00;
-    }
-    body{
-        color: white;
-        background-color: var(--bg-color);
-    }
-    p[contenteditable] {
-        outline: none;
-      }
-    .container {
-        margin-top: 20px;
-        text-align: center;
-        padding: 10px 20px;
-        background-color: var(--sec-color);
-    }
-    .container h3{
-        border-bottom: solid 1px ;
-        margin-bottom: 20px;
-        padding-bottom: 5px;
-    }
-    h1 {
-        margin: 10px;
-        text-align: center;
-        margin-bottom: 20px;
-    }
-    
-    .input-group {
-        margin-bottom: 10px;
-        display: flex;
-        align-items: center;
-        flex-wrap: wrap;
-    }
-    .input-group p{
-        width: 100%;
-    }
-    
-    .slider {
-        flex: 1;
-        margin-right: 10px;
-    }
-    
-    .input {
-        width: 50px;
-    }
-    
-    .popup-container {
-        display: none;
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background-color: #FFF5E0;
-        width: 80vw;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        padding: 10px 20px;
-        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-        z-index: 9999;
-    }
-    
-    #popup div{
-       display: flex;
-       flex-wrap: wrap;
-       justify-content: center;
-    }
-    #popup div input:first-child{
-        outline: none;
-        background-color: transparent;
-        padding: 5px 0px;
-        border: none;
-        border-bottom: 0.5px solid black;
-        width: 100%;
-    }
-    #max-range-input{
-        width: 70%;
-        padding: 5px 0px;
-        outline: none;
-        border: none;
-        background-color: transparent;
-        border-bottom: 0.5px solid black;
-    
-    }
-    .popup-container input,
-    .popup-container select {
-        display: block;
-        margin-bottom: 10px;
-        width: 30%;
-        background-color: transparent;
-        outline: none;
-        border: none;
-        border-bottom: 0.5px solid black;
-    
-    }
-    
-    #custom-range-input {
-        display: none;
-        outline: none;
-        background-color: transparent;
-        padding: 5px 0px;
-        border: none;
-        border-bottom: 0.5px solid black;
-        width: 100%;
-    }
-    
-    
-    #submit{
-        display: block;
-        margin: 10px auto;
-        margin-bottom: 0px;
-        padding: 10px 15px;
-        border: none;
-        background-color: var(--main-color);
-        font-size: 1.05rem;
-        border-radius: 5px;
-        color: white;
-        font-weight: bold;
-    }
-    
-    #close-popup{
-        position: relative;
-        left: 100%;
-        transform: translateX(-100%);
-        margin-bottom: 20px;
-        font-size: 1.2rem;
-        background-color: transparent;
-        border: none;
-    }
-    .delete-button {
-        background-color: var(--main-color);
-        color: white;
-        border: none;
-        cursor: pointer;
-        margin-left: 10px;
-        padding: 5px;
-        border-radius: 5px;
-    }
-    
-    .delete-button.hidden {
-        display: none;
-    }
-    
-    
-    /* Circular timer styles */
-    #timer-circle {
-        left: 50%;
-        transform: translateX(-50%);
-        position: relative;
-        width: 200px;
-        height: 200px;
-        background-color: var(--main-color);
-        box-shadow: var(--main-color) 0px 4px 20px;
-        border-radius: 50%;
-        display: flex;
-        margin: 10px;
-        justify-content: center;
-        align-items: center;
-        font-size: 20px;
-    }
-    #timer-circle.bright {
-        filter: brightness(120%);
-    }
-    
-    #timer-text {
-        text-align: center;
-    }
-    #time {
-        font-size: 24px;
-        font-weight: bold;
-    }
-    #percentage {
-        font-size: 18px;
-    }
-    .cong{
-        position: fixed;
-        width: 100vw;
-        height: 100vh;
-        top: 0px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background-color: var(--bg-color);
-    }
-    .cong div{
-        text-align: center;
-        font-size: 1.1rem;
-    }
-    #close-cong-popup{
-        position: absolute;
-        top: 5px;
-        right: 10px;
-        font-size: 1.6rem;
-        background-color: transparent;
-        border: none;
-        color: white;
-    }
-    #toggle-edit-delete{
-        position: absolute;
-        top: 12px;
-        right: 10px;
-        font-size: 1.6rem;
-        background-color: transparent;
-        color: var(--main-color);
-        border: none;
-    }
-    #inputs-container{
-        max-height: 45vh;
-        overflow-y: scroll;
-    }
-    #inputs-container::-webkit-scrollbar {
-        width: 0px;
-      }
-    .container input[type="range"] {
-        -webkit-appearance: none;
-        width: 100%;
-        height: 20px;
-        background: #d3d3d3; /* Grey background */
-        border-radius: 10px;
-        outline: none;
-        margin-top: 10px;
-        margin-bottom: 10px;
-      }
-
-      .container input[type="range"]::-webkit-slider-thumb {
-        -webkit-appearance: none;
-        appearance: none;
-        width: 25px;
-        height: 25px;
-        background: var(--main-color); /* Green thumb */
-        border-radius: 50%;
-        cursor: pointer;
-      }
-      
-      .container input[type="range"]::-moz-range-thumb {
-        width: 25px;
-        height: 25px;
-        background: var(--main-color); /* Green thumb */
-        border: none;
-        border-radius: 50%;
-        cursor: pointer;
-      }
-      
-      /* Additional styling for Firefox */
-      .container input[type="range"]::-moz-focus-outer {
-        border: 0;
-      }
-      /* Styling for Add Level button */
-    #add-slider{
-      background-color: var(--main-color); /* Green */
-      border: none;
-      color: white;
-      text-align: center;
-      text-decoration: none;
-      border-radius: 8px;
-      font-size: 1.5rem;
-      position: absolute;
-      padding: 10px 40px;
-      left: 50%;
-      bottom: 8vh;
-      transform: translateX(-50%);
-    }
-    
-    #add-slider:hover,
-    #level-complete:hover {
-      background-color: var(--main-color); /* Darker green */
-    }
-    #timer-circle {
-        /* Existing styles */
-        position: relative; /* Keep this line */
-    }
-    
-    #timer-text {
-        /* Existing styles */
-        position: relative; /* Add this line */
-    }
-    
-    #tab-hold-text {
-        /* Existing styles */
-        font-size: 0.8rem;
-        color: white;
-        display: inline-block; /* Add this line */
-        position: absolute;
-        transform: translateX(-50%);
-        margin-top: 10px;
-    }
-    
-    
-</style>
 </head>
 <body>
 
-<h1>Solo Leveling</h1>
-<div id="timer-circle">
-    <div id="timer-text">
-        <span id="time"></span><br>
-        <span id="percentage"></span><br>
-        <span id="tab-hold-text">Tab Hold<br>Submit</span>
+<div class="two">
+  <div class="one">
+    <h1>Solo Leveling</h1>
+    <div id="timer-circle">
+        <div id="timer-text">
+            <span id="time"></span><br>
+            <span id="percentage"></span><br>
+            <span id="tab-hold-text">Tab hold Submit</span>
+        </div>
     </div>
-</div>
-
-  
-
-<div class="container">
-    <h3>Daily Levels</h3>
-    <div id="inputs-container"></div>
-    <button id="add-slider">+</button>
-    <button id="toggle-edit-delete">&#9881;</button>
-</div>
-
-<div class="popup-container" id="popup">
-    <button id="close-popup">&#10006;</button>
-    <div>
     
-    <input type="text" id="level-name-input" placeholder="Enter Your Level Name">
-    <input type="number" id="max-range-input" placeholder="Your Target">
-    <select id="range-type">
-        <option value="km">Km</option>
-        <option value="custom">Custom</option>
-    </select>
+      
+    
+    <div class="container">
+        <h3>Daily Levels</h3>
+        <div id="inputs-container"></div>
+        <button id="add-slider">+</button>
+        <button id="toggle-edit-delete">&#9881;</button>
     </div>
-    <input type="text" id="custom-range-input" placeholder="Enter Level Type">
-    <button id="submit">Add</button>
+    
+    <div class="popup-container" id="popup">
+        <button id="close-popup">&#10006;</button>
+        <div>
+        
+        <input type="text" id="level-name-input" placeholder="Enter Your Level Name">
+        <input type="number" id="max-range-input" placeholder="Your Target">
+        <select id="range-type">
+            <option value="km">Km</option>
+            <option value="custom">Custom</option>
+        </select>
+        </div>
+        <input type="text" id="custom-range-input" placeholder="Enter Level Type">
+        <button id="submit">Add</button>
+    </div>
+ </div>
+
+   <div class="one">
+    <div>
+    <h3>Your Progress</h3>
+    <div class="graph-container">
+        <canvas id="completion-graph" width="800" height="300"></canvas>
+    </div>
+    </div>
+   </div>
+
 </div>
 
+<script src="graph.js"></script>
 <script>
     const addButton = document.getElementById("add-slider");
-const toggleEditDeleteButton = document.getElementById("toggle-edit-delete");
-const levelCompleteButton = document.getElementById("level-complete");
-const inputsContainer = document.getElementById("inputs-container");
-const popupContainer = document.getElementById("popup");
-const levelNameInput = document.getElementById("level-name-input");
-const maxRangeInput = document.getElementById("max-range-input");
-const rangeTypeSelect = document.getElementById("range-type");
-const customRangeInput = document.getElementById("custom-range-input");
-const submitButton = document.getElementById("submit");
-const closePopupButton = document.getElementById("close-popup");
-const timerTextElement = document.getElementById("time");
-const percentageElement = document.getElementById("percentage");
-let deleteButtonsVisible = false;
-
-function updateTimerCircle(hours, minutes, seconds, completionPercentage) {
-    timerTextElement.textContent = `${hours}h ${minutes}m ${seconds}s`;
-    percentageElement.textContent = `${completionPercentage}%`;
-}
-
-function updateTimer() {
-    const currentTime = new Date();
-    const nextDay = new Date(currentTime);
-    nextDay.setDate(currentTime.getDate() + 1);
-    nextDay.setHours(0, 0, 0, 0);
-    const timeRemaining = nextDay - currentTime;
-    const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
-
-    let totalMax = 0;
-    let totalValue = 0;
-    const sliders = document.querySelectorAll('.slider');
-    sliders.forEach(slider => {
-        if (parseInt(slider.value) > 0) {
-            totalMax += parseInt(slider.max);
-            totalValue += parseInt(slider.value);
-        }
-    });
-    const completionPercentage = totalMax !== 0 ? ((totalValue / totalMax) * 100).toFixed(2) : 0;
-
-    updateTimerCircle(hours, minutes, seconds, completionPercentage);
-
-    if (timeRemaining <= 0) {
-        timerTextElement.textContent = "Next Day!";
-        levelComplete();
-        resetSetRanges();
-        resetLevelValues(); // Call the function to reset level values
+    const toggleEditDeleteButton = document.getElementById("toggle-edit-delete");
+    const levelCompleteButton = document.getElementById("level-complete");
+    const inputsContainer = document.getElementById("inputs-container");
+    const popupContainer = document.getElementById("popup");
+    const levelNameInput = document.getElementById("level-name-input");
+    const maxRangeInput = document.getElementById("max-range-input");
+    const rangeTypeSelect = document.getElementById("range-type");
+    const customRangeInput = document.getElementById("custom-range-input");
+    const submitButton = document.getElementById("submit");
+    const closePopupButton = document.getElementById("close-popup");
+    const timerTextElement = document.getElementById("time");
+    const percentageElement = document.getElementById("percentage");
+    let deleteButtonsVisible = false;
+    
+    function updateTimerCircle(hours, minutes, seconds, completionPercentage) {
+        timerTextElement.textContent = `${hours}h ${minutes}m ${seconds}s`;
+        percentageElement.textContent = `${completionPercentage}%`;
     }
-
-    requestAnimationFrame(updateTimer);
-}
-
-function resetLevelValues() {
-    const sliders = document.querySelectorAll('.slider');
-    sliders.forEach((slider) => {
-        slider.value = 0;
-        const inputGroup = slider.parentNode;
-        const input = inputGroup.querySelector(".value");
-        input.textContent = `0/${slider.max} ${input.textContent.split(" ").pop()}`;
-    });
-}
-
-
-function addLevel(levelName, maxRange, rangeType) {
-    const inputGroup = document.createElement("div");
-    inputGroup.classList.add("input-group");
-    const slider = document.createElement("input");
-    slider.type = "range";
-    slider.min = "0";
-    slider.max = maxRange;
-    slider.value = "0";
-    slider.classList.add("slider");
-    const input = document.createElement("span");
-    input.classList.add("value");
-    input.textContent = `0/${slider.max} ${rangeType}`;
-    const levelNameElement = document.createElement("p");
-    levelNameElement.textContent = levelName;
-    levelNameElement.contentEditable = false;
-    levelNameElement.classList.add("level-name");
-    inputGroup.appendChild(levelNameElement);
-    inputGroup.appendChild(slider);
-    inputGroup.appendChild(input);
-    inputsContainer.appendChild(inputGroup);
-
-    levelNameElement.addEventListener("input", saveValues);
-    slider.addEventListener("input", () => {
-        input.textContent = `${slider.value}/${slider.max} ${rangeType}`;
+    
+    function updateTimer() {
+        const currentTime = new Date();
+        const nextDay = new Date(currentTime);
+        nextDay.setDate(currentTime.getDate() + 1);
+        nextDay.setHours(0, 0, 0, 0);
+        const timeRemaining = nextDay - currentTime;
+        const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+    
+        let totalMax = 0;
+        let totalValue = 0;
+        const sliders = document.querySelectorAll('.slider');
+        sliders.forEach(slider => {
+            if (parseInt(slider.value) > 0) {
+                totalMax += parseInt(slider.max);
+                totalValue += parseInt(slider.value);
+            }
+        });
+        const completionPercentage = totalMax !== 0 ? ((totalValue / totalMax) * 100).toFixed(2) : 0;
+    
+        updateTimerCircle(hours, minutes, seconds, completionPercentage);
+    
+        if (timeRemaining <= 0) {
+            timerTextElement.textContent = "Next Day!";
+            levelComplete();
+            resetSetRanges();
+            resetLevelValues(); // Call the function to reset level values
+        }
+    
+        requestAnimationFrame(updateTimer);
+    }
+    
+    function resetLevelValues() {
+        const sliders = document.querySelectorAll('.slider');
+        sliders.forEach((slider) => {
+            slider.value = 0;
+            const inputGroup = slider.parentNode;
+            const input = inputGroup.querySelector(".value");
+            input.textContent = `0/${slider.max} ${input.textContent.split(" ").pop()}`;
+        });
+    }
+    
+    function addLevel(levelName, maxRange, rangeType) {
+        const inputGroup = document.createElement("div");
+        inputGroup.classList.add("input-group");
+        const slider = document.createElement("input");
+        slider.type = "range";
+        slider.min = "0";
+        slider.max = maxRange;
+        slider.value = "0";
+        slider.classList.add("slider");
+        const input = document.createElement("span");
+        input.classList.add("value");
+        input.textContent = `0/${slider.max} ${rangeType}`;
+        const levelNameElement = document.createElement("p");
+        levelNameElement.textContent = levelName;
+        levelNameElement.contentEditable = false;
+        levelNameElement.classList.add("level-name");
+        inputGroup.appendChild(levelNameElement);
+        inputGroup.appendChild(slider);
+        inputGroup.appendChild(input);
+        inputsContainer.appendChild(inputGroup);
+    
+        levelNameElement.addEventListener("input", saveValues);
+        slider.addEventListener("input", () => {
+            input.textContent = `${slider.value}/${slider.max} ${rangeType}`;
+            saveValues();
+        });
+    
+        slider.dispatchEvent(new Event('input'));
         saveValues();
-    });
-
-    slider.dispatchEvent(new Event('input'));
-    saveValues();
-    const lastLevelName = inputGroup.querySelector('.level-name');
-    if (lastLevelName) lastLevelName.dispatchEvent(new Event('input'));
-}
-
-function saveValues() {
-    const sliders = document.querySelectorAll('.slider');
-    const levelNames = document.querySelectorAll('.level-name');
-    const values = [];
-
-    sliders.forEach((slider, index) => {
-        const inputGroup = slider.parentNode;
-        const rangeType = inputGroup.querySelector(".value").textContent.split(" ").pop();
-        values.push({
-            slider: slider.value,
-            levelName: levelNames[index].textContent,
-            maxRange: slider.max,
-            rangeType: rangeType
-        });
-    });
-
-    localStorage.setItem('sliderValues', JSON.stringify(values));
-}
-
-function loadValues() {
-    const savedValues = JSON.parse(localStorage.getItem('sliderValues'));
-
-    if (savedValues) {
-        savedValues.forEach((value) => {
-            addLevel(value.levelName, value.maxRange, value.rangeType);
-        });
-
+        const lastLevelName = inputGroup.querySelector('.level-name');
+        if (lastLevelName) lastLevelName.dispatchEvent(new Event('input'));
+    }
+    
+    function saveValues() {
         const sliders = document.querySelectorAll('.slider');
         const levelNames = document.querySelectorAll('.level-name');
-
+        const values = [];
+    
         sliders.forEach((slider, index) => {
-            slider.value = savedValues[index].slider;
-            slider.max = savedValues[index].maxRange;
-            slider.dispatchEvent(new Event('input'));
-            levelNames[index].textContent = savedValues[index].levelName;
-            levelNames[index].dispatchEvent(new Event('input'));
+            const inputGroup = slider.parentNode;
+            const rangeType = inputGroup.querySelector(".value").textContent.split(" ").pop();
+            values.push({
+                slider: slider.value,
+                levelName: levelNames[index].textContent,
+                maxRange: slider.max,
+                rangeType: rangeType
+            });
+        });
+    
+        localStorage.setItem('sliderValues', JSON.stringify(values));
+    }
+    
+    function loadValues() {
+        const savedValues = JSON.parse(localStorage.getItem('sliderValues'));
+    
+        if (savedValues) {
+            savedValues.forEach((value) => {
+                addLevel(value.levelName, value.maxRange, value.rangeType);
+            });
+    
+            const sliders = document.querySelectorAll('.slider');
+            const levelNames = document.querySelectorAll('.level-name');
+    
+            sliders.forEach((slider, index) => {
+                slider.value = savedValues[index].slider;
+                slider.max = savedValues[index].maxRange;
+                slider.dispatchEvent(new Event('input'));
+                levelNames[index].textContent = savedValues[index].levelName;
+                levelNames[index].dispatchEvent(new Event('input'));
+            });
+        }
+    }
+    
+    function levelComplete() {
+        const completionPercentage = parseFloat(percentageElement.textContent.replace("Completion: ", ""));
+        const currentDate = new Date().toDateString();
+    
+// Retrieve existing completion data from local storage
+let completionData = JSON.parse(localStorage.getItem('completionData')) || {};
+
+// Update completion data with current completion percentage and current date/time
+const currentDateTime = new Date().toLocaleString();
+completionData[currentDateTime] = completionPercentage;
+
+// Store updated completion data back to local storage
+localStorage.setItem('completionData', JSON.stringify(completionData));
+
+    
+        const popupContent = `
+            <div class="cong">
+                <div>
+                    <h2>Congratulations!</h2>
+                    <p>You've completed today's level.</p>
+                    <p>Completion : ${completionPercentage}%</p>
+                    <button class="refreshButton" id="close-cong-popup">&#10006;</button>
+                </div>
+            </div>
+        `;
+    
+        const popup = document.createElement("div");
+        popup.classList.add("popup");
+        popup.innerHTML = popupContent;
+    
+        document.body.appendChild(popup);
+        refreshGraph();
+
+        const closePopupButton = popup.querySelector("#close-cong-popup");
+        closePopupButton.addEventListener("click", () => {
+            popup.remove();
+        });
+    
+        const sliders = document.querySelectorAll('.slider');
+        sliders.forEach((slider) => {
+            slider.value = 0;
+            const inputGroup = slider.parentNode;
+            const input = inputGroup.querySelector(".value");
+            input.textContent = `0/${slider.max} ${input.textContent.split(" ").pop()}`;
         });
     }
-}
-
-function levelComplete() {
-    const completionPercentage = parseFloat(percentageElement.textContent.replace("Completion: ", ""));
-    const timeTaken = timerTextElement.textContent;
-    const currentTime = new Date();
-    const nextDay = new Date(currentTime);
-    nextDay.setDate(currentTime.getDate() + 1);
-    nextDay.setHours(0, 0, 0, 0);
-    const timeRemaining = nextDay - currentTime;
-    const totalMax = 24 * 60 * 60 * 1000; // Total milliseconds in a day
-    const timeNeeded = totalMax - timeRemaining; // Time needed based on remaining time
-
-    const hoursNeeded = Math.floor(timeNeeded / (1000 * 60 * 60));
-    const minutesNeeded = Math.floor((timeNeeded % (1000 * 60 * 60)) / (1000 * 60));
-    const secondsNeeded = Math.floor((timeNeeded % (1000 * 60)) / 1000);
-
-    const popupContent = `
-        <div class="cong">
-            <div>
-                <h2>Congratulations!</h2>
-                <p>You've completed today's level.</p>
-                <p>Completion : ${completionPercentage}%</p>
-                <p>Complete in : ${hoursNeeded}h ${minutesNeeded}m ${secondsNeeded}s</p>
-                <button id="close-cong-popup">&#10006;</button>
-            </div>
-        </div>
-    `;
-
-    const popup = document.createElement("div");
-    popup.classList.add("popup");
-    popup.innerHTML = popupContent;
-
-    document.body.appendChild(popup);
-
-    const closePopupButton = popup.querySelector("#close-cong-popup");
+    
+    updateTimer();
+    
+    addButton.addEventListener("click", () => popupContainer.style.display = "block");
+    
     closePopupButton.addEventListener("click", () => {
-        popup.remove();
+        popupContainer.style.display = "none";
+        [levelNameInput.value, maxRangeInput.value, rangeTypeSelect.value, customRangeInput.value] = ['', '', 'km', ''];
+        customRangeInput.style.display = "none";
     });
-
-    const sliders = document.querySelectorAll('.slider');
-    sliders.forEach((slider) => {
-        slider.value = 0;
-        const inputGroup = slider.parentNode;
-        const input = inputGroup.querySelector(".value");
-        input.textContent = `0/${slider.max} ${input.textContent.split(" ").pop()}`;
-    });
-}
-
-updateTimer();
-
-addButton.addEventListener("click", () => popupContainer.style.display = "block");
-
-closePopupButton.addEventListener("click", () => {
-    popupContainer.style.display = "none";
-    [levelNameInput.value, maxRangeInput.value, rangeTypeSelect.value, customRangeInput.value] = ['', '', 'km', ''];
-    customRangeInput.style.display = "none";
-});
-
-submitButton.addEventListener("click", () => {
-    const levelName = levelNameInput.value.trim();
-    const maxRange = parseInt(maxRangeInput.value.trim());
-    const rangeType = rangeTypeSelect.value === 'custom' ? customRangeInput.value.trim() : rangeTypeSelect.value;
-
-    if (!levelName || isNaN(maxRange) || maxRange <= 0 || (rangeTypeSelect.value === 'custom' && !rangeType)) {
-        return alert("Please enter valid data.");
-    }
-
-    addLevel(levelName, maxRange, rangeType);
-    [levelNameInput.value, maxRangeInput.value, rangeTypeSelect.value, customRangeInput.value] = ['', '', 'km', ''];
-    customRangeInput.style.display = "none";
-    popupContainer.style.display = "none";
-});
-
-toggleEditDeleteButton.addEventListener("click", () => {
-    const levelNameElements = document.querySelectorAll('.level-name');
-    const inputGroups = document.querySelectorAll(".input-group");
-    deleteButtonsVisible = !deleteButtonsVisible;
-
-    levelNameElements.forEach(element => element.contentEditable = !element.isContentEditable);
-
-    inputGroups.forEach(group => {
-        const deleteButton = group.querySelector(".delete-button");
-        if (deleteButtonsVisible) {
-            if (!deleteButton) {
-                const newDeleteButton = document.createElement("button");
-                newDeleteButton.textContent = "✖";
-                newDeleteButton.classList.add("delete-button");
-                newDeleteButton.addEventListener("click", () => {
-                    group.remove();
-                    saveValues();
-                });
-                group.appendChild(newDeleteButton);
-            }
-        } else {
-            if (deleteButton) deleteButton.remove();
+    
+    submitButton.addEventListener("click", () => {
+        const levelName = levelNameInput.value.trim();
+        const maxRange = parseInt(maxRangeInput.value.trim());
+        const rangeType = rangeTypeSelect.value === 'custom' ? customRangeInput.value.trim() : rangeTypeSelect.value;
+    
+        if (!levelName || isNaN(maxRange) || maxRange <= 0 || (rangeTypeSelect.value === 'custom' && !rangeType)) {
+            return alert("Please enter valid data.");
         }
+    
+        addLevel(levelName, maxRange, rangeType);
+        [levelNameInput.value, maxRangeInput.value, rangeTypeSelect.value, customRangeInput.value] = ['', '', 'km', ''];
+        customRangeInput.style.display = "none";
+        popupContainer.style.display = "none";
     });
-});
-
-//levelCompleteButton.addEventListener("click", levelComplete);
-const timerCircle = document.getElementById("timer-circle");
-let holdTimer;
-
-timerCircle.addEventListener("touchstart", () => {
-    timerCircle.classList.add("bright");
-    holdTimer = setTimeout(() => {
-        levelComplete();
-    }, 2000); // 2 seconds
-});
-
-timerCircle.addEventListener("touchend", () => {
-    clearTimeout(holdTimer);
-    timerCircle.classList.remove("bright");
-});
-
-
-rangeTypeSelect.addEventListener("change", () => customRangeInput.style.display = rangeTypeSelect.value === 'custom' ? "block" : "none");
-
-window.addEventListener('DOMContentLoaded', loadValues);
-
+    
+    toggleEditDeleteButton.addEventListener("click", () => {
+        const levelNameElements = document.querySelectorAll('.level-name');
+        const inputGroups = document.querySelectorAll(".input-group");
+        deleteButtonsVisible = !deleteButtonsVisible;
+    
+        levelNameElements.forEach(element => element.contentEditable = !element.isContentEditable);
+    
+        inputGroups.forEach(group => {
+            const deleteButton = group.querySelector(".delete-button");
+            if (deleteButtonsVisible) {
+                if (!deleteButton) {
+                    const newDeleteButton = document.createElement("button");
+                    newDeleteButton.textContent = "✖";
+                    newDeleteButton.classList.add("delete-button");
+                    newDeleteButton.addEventListener("click", () => {
+                        group.remove();
+                        saveValues();
+                    });
+                    group.appendChild(newDeleteButton);
+                }
+            } else {
+                if (deleteButton) deleteButton.remove();
+            }
+        });
+    });
+    
+    const timerCircle = document.getElementById("timer-circle");
+    let holdTimer;
+    
+    timerCircle.addEventListener("touchstart", () => {
+        timerCircle.classList.add("bright");
+        holdTimer = setTimeout(() => {
+            levelComplete();
+        }, 1300); // 2 seconds
+    });
+    
+    timerCircle.addEventListener("touchend", () => {
+        clearTimeout(holdTimer);
+        timerCircle.classList.remove("bright");
+    });
+    
+    rangeTypeSelect.addEventListener("change", () => customRangeInput.style.display = rangeTypeSelect.value === 'custom' ? "block" : "none");
+    
+    window.addEventListener('DOMContentLoaded', loadValues);
+    
+    window.addEventListener('contextmenu', function (e) {
+        e.preventDefault();
+    });
+    
+    // Disable text selection
+    document.addEventListener('selectstart', function (e) {
+        e.preventDefault();
+    });
+    
+    
 </script>
 </body>
 </html>

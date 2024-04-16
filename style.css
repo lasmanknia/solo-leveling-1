@@ -193,6 +193,7 @@ h1 {
     justify-content: center;
     align-items: center;
     background-color: var(--bg-color);
+    z-index: 2;
 }
 .cong div{
     text-align: center;
@@ -207,7 +208,7 @@ h1 {
     border: none;
     color: white;
 }
-#toggle-edit-delete{
+#toggle-edit-delete,#toggleGraph{
     position: absolute;
     top: 12px;
     right: 10px;
@@ -216,8 +217,13 @@ h1 {
     color: var(--main-color);
     border: none;
 }
+#toggleGraph{
+    z-index: 1;
+    left: 12px;
+    right: auto;
+}
 #inputs-container{
-    max-height: 45vh;
+    max-height: 47vh;
     overflow-y: scroll;
 }
 #inputs-container::-webkit-scrollbar {
@@ -267,10 +273,9 @@ h1 {
   border-radius: 8px;
   font-size: 1.5rem;
   position: absolute;
-  padding: 10px 40px;
-  left: 50%;
+  padding: 10px 20px;
   bottom: 8vh;
-  transform: translateX(-50%);
+  right: 12vw;
 }
 
 #add-slider:hover,
@@ -315,13 +320,17 @@ h1 {
 }
 .one:nth-child(2){
     display: grid;
+    visibility: hidden;
+    position: absolute;
     place-items: center;
     text-align: center;
+    background-color: var(--bg-color);
 }
 .graph-container {
-    width: 100vw;
-    overflow-x: auto;
+    width: 98vw;
+    overflow-x: hidden;
     margin: 20px auto;
+    border: solid 1px;
 }
 .bar {
      fill: var(--main-color); 
@@ -334,3 +343,7 @@ h1 {
      stroke: #333; 
      stroke-width: 1px; 
     }
+
+.one.hidden {
+    visibility: visible;
+}

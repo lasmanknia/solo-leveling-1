@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Solo Leveling</title>
 <link rel="stylesheet" href="style.css">
+
 <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
@@ -14,6 +15,12 @@
    </script>
 </head>
 <body>
+    <button id="toggleGraph">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bar-chart" viewBox="0 0 16 16">
+            <path d="M1 5h3v9H1V5zm4-3h3v12H5V2zm4 3h3v9H9V5zm4-3h3v12h-3V2z"/>
+        </svg>
+    </button>
+    
 
 <div class="two">
   <div class="one">
@@ -51,7 +58,10 @@
     </div>
  </div>
 
-   <div class="one">
+
+
+
+   <div class="one dui">
     <div>
     <h3>Your Progress</h3>
     <div class="graph-container">
@@ -64,6 +74,14 @@
 
 <script src="graph.js"></script>
 <script>
+
+    const toggleGraphButton = document.getElementById("toggleGraph");
+    const graphContainer = document.querySelector(".dui");
+    
+    toggleGraphButton.addEventListener("click", () => {
+        graphContainer.classList.toggle("hidden");
+    });
+    
     const addButton = document.getElementById("add-slider");
     const toggleEditDeleteButton = document.getElementById("toggle-edit-delete");
     const levelCompleteButton = document.getElementById("level-complete");
